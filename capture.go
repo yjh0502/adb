@@ -7,8 +7,6 @@ import (
 	"os/exec"
 	"sync"
 	"time"
-
-	"jihyun/bot/cv"
 )
 
 var (
@@ -52,10 +50,6 @@ func ScreenCapture() (*image.NRGBA, error) {
 	rect := image.Rectangle{image.Pt(0, 0), image.Pt(int(width), int(height))}
 
 	img := &image.NRGBA{Pix: data[12:], Stride: stride, Rect: rect}
-	if width > height {
-		// TODO: Android M에서 rotation을 고려한 이미지를 세로 rotation으로 수정
-		img = cv.RotateClockwise(img)
-	}
 
 	lastImage = img
 	return lastImage, nil
