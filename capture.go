@@ -48,7 +48,7 @@ type ScreenImage struct {
 	Created time.Time
 }
 
-func ScreensCapture(out chan<- ScreenImage, done <-chan bool) error {
+func ScreensCapture(out chan<- ScreenImage, done <-chan struct{}) error {
 	onScreen := make(chan *image.NRGBA)
 	onError := make(chan error)
 	startTime := time.Now()
