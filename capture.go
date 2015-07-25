@@ -5,19 +5,10 @@ import (
 	"encoding/binary"
 	"image"
 	"os/exec"
-	"sync"
 	"time"
 )
 
-var (
-	lastImage    *image.NRGBA
-	captureMutex sync.Mutex
-)
-
 func ScreenCapture() (*image.NRGBA, error) {
-	captureMutex.Lock()
-	defer captureMutex.Unlock()
-
 	args := captureCommand()
 	cmd := exec.Command(args[0], args[1:]...)
 
@@ -49,10 +40,7 @@ func ScreenCapture() (*image.NRGBA, error) {
 	stride := int(width * 4)
 	rect := image.Rectangle{image.Pt(0, 0), image.Pt(int(width), int(height))}
 
-	img := &image.NRGBA{Pix: data[12:], Stride: stride, Rect: rect}
-
-	lastImage = img
-	return lastImage, nil
+	return &image.NRGBA{Pix: data[12:], Stride: stride, Rect: rect}, nil
 }
 
 type ScreenImage struct {
