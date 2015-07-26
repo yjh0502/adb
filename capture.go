@@ -48,9 +48,10 @@ type ScreenImage struct {
 	Created time.Time
 }
 
-func ScreensCapture(out chan<- ScreenImage, done <-chan struct{}) error {
+func ScreensCapture(minInterval time.Duration, out chan<- ScreenImage, done <-chan struct{}) error {
 	onScreen := make(chan *image.NRGBA)
 	onError := make(chan error)
+	onCapture := time.After(0)
 	startTime := time.Now()
 	captureFunc := func() {
 		img, err := ScreenCapture()
@@ -68,13 +69,20 @@ func ScreensCapture(out chan<- ScreenImage, done <-chan struct{}) error {
 			return nil
 		case err := <-onError:
 			return err
+		case <-onCapture:
+			go captureFunc()
 		case img := <-onScreen:
 			out <- ScreenImage{
 				Image:   img,
 				Created: startTime,
 			}
 			startTime = time.Now()
-			go captureFunc()
+			diff := startTime.Add(minInterval).Sub(time.Now())
+
+			if diff < 0 {
+				diff = 0
+			}
+			onCapture = time.After(diff)
 		}
 	}
 }
