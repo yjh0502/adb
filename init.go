@@ -4,6 +4,10 @@ import (
 	"flag"
 )
 
+func DeviceId() string {
+	return deviceId
+}
+
 var (
 	deviceId   string
 	remotePath string
